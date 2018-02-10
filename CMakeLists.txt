@@ -6,5 +6,5 @@ set(CMAKE_CXX_STANDARD 11)
 add_executable(verysimple_vm
         main.c
         makefile
-        vsvm.c
-        vsvm.h logger.h logger.c instruction_set.c instruction_set.h)
+        src/vsvm.c
+        include/vsvm.h include/logger.h src/logger.c include/instruction_set.h src/math.c include/math.h)

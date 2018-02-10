@@ -1,7 +1,9 @@
-#include "vsvm.h"
-#include "instruction_set.h"
+#include "include/vsvm.h"
+#include "include/instruction_set.h"
+#include "include/logger.h"
 
 int main(int argc, char *argv[]) {
+    log_set_level(VERYSIMPLE_VM_LOG_DEBUG);
     int factorial[] = {
             VERYSIMPLE_VM_LOAD, -3,
             VERYSIMPLE_VM_ICONST, 2,
