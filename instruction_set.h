@@ -1,8 +1,6 @@
 #ifndef VERYSIMPLE_VM_INSTRUCTION_SET_H
 #define VERYSIMPLE_VM_INSTRUCTION_SET_H
 
-#include <stdlib.h>
-
 extern const int VERYSIMPLE_VM_HALT;
 extern const int VERYSIMPLE_VM_ICONST;
 extern const int VERYSIMPLE_VM_IADD;
