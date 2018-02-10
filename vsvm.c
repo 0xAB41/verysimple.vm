@@ -118,11 +118,6 @@ int execute(struct vm_state *state, int decoded_instruction) {
         int val = state->stack[state->frame_pointer + offset];
         push(state, val);
         log("load %d = %d\n", offset, val);
-    } else if (decoded_instruction == VERYSIMPLE_VM_STORE) {
-        int val = pop(state);
-        int offset = state->instructions[state->program_counter++];
-        //TODO: put the val on stack/locals
-        log("store %d = %d\n", offset, val);
     } else if (decoded_instruction == VERYSIMPLE_VM_PRINT) {
         log("print %d\n", peek(state));
     } else if (decoded_instruction == VERYSIMPLE_VM_HALT) {
