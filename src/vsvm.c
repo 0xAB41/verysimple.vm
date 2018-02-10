@@ -21,14 +21,6 @@ static void print_stack(struct vm *state) {
     log_debug("\n");
 }
 
-static int fetch(struct vm *state) {
-    return state->instructions[state->program_counter++];
-}
-
-static int decode(int instruction) {
-    return instruction;
-}
-
 static int pop(struct vm *state) {
     return state->stack[state->stack_pointer--];
 }
@@ -90,6 +82,14 @@ static void load_const(struct vm *state) {
     int val = state->instructions[state->program_counter++];
     push(state, val);
     log_debug("iconst %d\n", val);
+}
+
+static int fetch(struct vm *state) {
+    return state->instructions[state->program_counter++];
+}
+
+static int decode(int instruction) {
+    return instruction;
 }
 
 static int execute(struct vm *state, int decoded_instruction) {
