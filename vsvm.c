@@ -1,6 +1,6 @@
 #include "vsvm.h"
 #include "instruction_set.h"
-#include <stdio.h>
+#include "logger.h"
 
 struct vm_state {
     int *instructions;
@@ -12,11 +12,11 @@ struct vm_state {
 };
 
 void print_stack(struct vm_state *state) {
-    printf("    [stack]");
+    log("    [stack]");
     for (int i = 0; i <= state->stack_pointer; i++) {
-        printf(" -> %d", state->stack[i]);
+        log(" -> %d", state->stack[i]);
     }
-    printf("\n");
+    log("\n");
 }
 
 int fetch(struct vm_state *state) {
@@ -45,60 +45,60 @@ int execute(struct vm_state *state, int decoded_instruction) {
     if (decoded_instruction == VERYSIMPLE_VM_ICONST) {
         int constant = state->instructions[state->program_counter++];
         push(state, constant);
-        printf("iconst %d\n", constant);
+        log("iconst %d\n", constant);
     } else if (decoded_instruction == VERYSIMPLE_VM_IADD) {
         int b = pop(state);
         int a = pop(state);
         push(state, a + b);
-        printf("iadd %d %d\n", a, b);
+        log("iadd %d %d\n", a, b);
     } else if (decoded_instruction == VERYSIMPLE_VM_ISUB) {
         int b = pop(state);
         int a = pop(state);
         push(state, a - b);
-        printf("isub %d %d\n", a, b);
+        log("isub %d %d\n", a, b);
     } else if (decoded_instruction == VERYSIMPLE_VM_IMUL) {
         int b = pop(state);
         int a = pop(state);
         push(state, a * b);
-        printf("imul %d %d\n", a, b);
+        log("imul %d %d\n", a, b);
     } else if (decoded_instruction == VERYSIMPLE_VM_LT) {
         int b = pop(state);
         int a = pop(state);
         push(state, a < b);
-        printf("lt %d %d\n", a, b);
+        log("lt %d %d\n", a, b);
     } else if (decoded_instruction == VERYSIMPLE_VM_GT) {
         int b = pop(state);
         int a = pop(state);
         push(state, a > b);
-        printf("gt %d %d\n", a, b);
+        log("gt %d %d\n", a, b);
     } else if (decoded_instruction == VERYSIMPLE_VM_EQ) {
         int b = pop(state);
         int a = pop(state);
         push(state, a == b);
-        printf("eq %d %d\n", a, b);
+        log("eq %d %d\n", a, b);
     } else if (decoded_instruction == VERYSIMPLE_VM_NEQ) {
         int b = pop(state);
         int a = pop(state);
         push(state, a != b);
-        printf("neq %d %d\n", a, b);
+        log("neq %d %d\n", a, b);
     } else if (decoded_instruction == VERYSIMPLE_VM_BRT) {
         int location = state->instructions[state->program_counter++];
         int flag = pop(state);
-        printf("brt %d %d\n", flag, location);
+        log("brt %d %d\n", flag, location);
         if (flag) {
             state->program_counter = location;
         }
     } else if (decoded_instruction == VERYSIMPLE_VM_BRF) {
         int location = state->instructions[state->program_counter++];
         int flag = pop(state);
-        printf("brf %d %d\n", flag, location);
+        log("brf %d %d\n", flag, location);
         if (!flag) {
             state->program_counter = location;
         }
     } else if (decoded_instruction == VERYSIMPLE_VM_CALL) {
         int location = state->instructions[state->program_counter++];
         int nargs = state->instructions[state->program_counter++];
-        printf("call %d %d\n", location, nargs);
+        log("call %d %d\n", location, nargs);
         push(state, nargs);
         push(state, state->frame_pointer);
         push(state, state->program_counter);
@@ -112,24 +112,24 @@ int execute(struct vm_state *state, int decoded_instruction) {
         int nargs = pop(state);
         state->stack_pointer -= nargs;
         push(state, function_return);
-        printf("ret\n");
+        log("ret\n");
     } else if (decoded_instruction == VERYSIMPLE_VM_LOAD) {
         int offset = state->instructions[state->program_counter++];
         int val = state->stack[state->frame_pointer + offset];
         push(state, val);
-        printf("load %d = %d\n", offset, val);
+        log("load %d = %d\n", offset, val);
     } else if (decoded_instruction == VERYSIMPLE_VM_STORE) {
         int val = pop(state);
         int offset = state->instructions[state->program_counter++];
         //TODO: put the val on stack/locals
-        printf("store %d = %d\n", offset, val);
+        log("store %d = %d\n", offset, val);
     } else if (decoded_instruction == VERYSIMPLE_VM_PRINT) {
-        printf("print %d\n", peek(state));
+        log("print %d\n", peek(state));
     } else if (decoded_instruction == VERYSIMPLE_VM_HALT) {
         state->is_running = 0;
-        printf("halt\n");
+        log("halt\n");
     } else {
-        printf("Unknown instruction %d\n", decoded_instruction);
+        log("Unknown instruction %d\n", decoded_instruction);
         ret_val = 0;
     }
     print_stack(state);
