@@ -63,14 +63,14 @@ static void return_from_fn_and_unwind_stack(struct vm *state) {
     log_debug("ret\n");
 }
 
-static void perform_op(struct vm *state, int (*op)(int, int), char *debug_str) {
+static void perform_binary_op(struct vm *state, int (*op)(int, int), char *debug_str) {
     int a = pop(state);
     int b = pop(state);
     log_debug("%s %d %d\n", debug_str, a, b);
     push(state, op(a, b));
 }
 
-static void branch(struct vm *state, int (*fn)(int), char *debug_str) {
+static void branch_on_condition(struct vm *state, int (*fn)(int), char *debug_str) {
     int location = state->instructions[state->program_counter++];
     int flag = pop(state);
     log_debug("%s %d %d\n", debug_str, flag, location);
@@ -79,42 +79,52 @@ static void branch(struct vm *state, int (*fn)(int), char *debug_str) {
     }
 }
 
+static void load_const_rel_to_frame(struct vm *state) {
+    int offset = state->instructions[state->program_counter++];
+    int val = state->stack[state->frame_pointer + offset];
+    push(state, val);
+    log_debug("load %d = %d\n", offset, val);
+}
+
+static void load_const(struct vm *state) {
+    int val = state->instructions[state->program_counter++];
+    push(state, val);
+    log_debug("iconst %d\n", val);
+}
+
 static int execute(struct vm *state, int decoded_instruction) {
     int ret_val = 1;
     print_stack(state);
-    int a, b, offset, val, location, constant;
     switch (decoded_instruction) {
         case VERYSIMPLE_VM_ICONST:
-            val = state->instructions[state->program_counter++];
-            push(state, val);
-            log_debug("iconst %d\n", val);
+            load_const(state);
             break;
         case VERYSIMPLE_VM_IADD:
-            perform_op(state, &iadd, "iadd");
+            perform_binary_op(state, &iadd, "iadd");
             break;
         case VERYSIMPLE_VM_ISUB:
-            perform_op(state, &isub, "isub");
+            perform_binary_op(state, &isub, "isub");
             break;
         case VERYSIMPLE_VM_IMUL:
-            perform_op(state, &imul, "imul");
+            perform_binary_op(state, &imul, "imul");
             break;
         case VERYSIMPLE_VM_LT:
-            perform_op(state, &ilt, "lt");
+            perform_binary_op(state, &ilt, "lt");
             break;
         case VERYSIMPLE_VM_GT:
-            perform_op(state, &igt, "gt");
+            perform_binary_op(state, &igt, "gt");
             break;
         case VERYSIMPLE_VM_EQ:
-            perform_op(state, &ieq, "eq");
+            perform_binary_op(state, &ieq, "eq");
             break;
         case VERYSIMPLE_VM_NEQ:
-            perform_op(state, &ineq, "neq");
+            perform_binary_op(state, &ineq, "neq");
             break;
         case VERYSIMPLE_VM_BRT:
-            branch(state, &identity, "brt");
+            branch_on_condition(state, &identity, "brt");
             break;
         case VERYSIMPLE_VM_BRF:
-            branch(state, &negate_as_binary, "brf");
+            branch_on_condition(state, &negate_as_binary, "brf");
             break;
         case VERYSIMPLE_VM_CALL:
             save_state_and_jump_to_fn(state);
@@ -123,10 +133,7 @@ static int execute(struct vm *state, int decoded_instruction) {
             return_from_fn_and_unwind_stack(state);
             break;
         case VERYSIMPLE_VM_LOAD:
-            offset = state->instructions[state->program_counter++];
-            val = state->stack[state->frame_pointer + offset];
-            push(state, val);
-            log_debug("load %d = %d\n", offset, val);
+            load_const_rel_to_frame(state);
             break;
         case VERYSIMPLE_VM_PRINT:
             log_debug("print %d\n", peek(state));
