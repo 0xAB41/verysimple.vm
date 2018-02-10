@@ -14,7 +14,7 @@ struct vm_state {
 void print_stack(struct vm_state *state) {
     printf("    [stack]");
     for (int i = 0; i <= state->stack_pointer; i++) {
-        printf("->%d", state->stack[i]);
+        printf(" -> %d", state->stack[i]);
     }
     printf("\n");
 }
@@ -95,12 +95,35 @@ int execute(struct vm_state *state, int decoded_instruction) {
         if (!flag) {
             state->program_counter = location;
         }
-    }  else if (decoded_instruction == VERYSIMPLE_VM_CALL) {
-        printf("call\n");
-    }
-    else if (decoded_instruction == VERYSIMPLE_VM_RET) {
+    } else if (decoded_instruction == VERYSIMPLE_VM_CALL) {
+        int location = state->instructions[state->program_counter++];
+        int nargs = state->instructions[state->program_counter++];
+        printf("call %d %d\n", location, nargs);
+        push(state, nargs);
+        push(state, state->frame_pointer);
+        push(state, state->program_counter);
+        state->frame_pointer = state->stack_pointer;
+        state->program_counter = location;
+    } else if (decoded_instruction == VERYSIMPLE_VM_RET) {
+        int function_return = pop(state);
+        state->stack_pointer = state->frame_pointer;
+        state->program_counter = pop(state);
+        state->frame_pointer = pop(state);
+        int nargs = pop(state);
+        state->stack_pointer -= nargs;
+        push(state, function_return);
         printf("ret\n");
-    }else if (decoded_instruction == VERYSIMPLE_VM_PRINT) {
+    } else if (decoded_instruction == VERYSIMPLE_VM_LOAD) {
+        int offset = state->instructions[state->program_counter++];
+        int val = state->stack[state->frame_pointer + offset];
+        push(state, val);
+        printf("load %d = %d\n", offset, val);
+    } else if (decoded_instruction == VERYSIMPLE_VM_STORE) {
+        int val = pop(state);
+        int offset = state->instructions[state->program_counter++];
+        //TODO: put the val on stack/locals
+        printf("store %d = %d\n", offset, val);
+    } else if (decoded_instruction == VERYSIMPLE_VM_PRINT) {
         printf("print %d\n", peek(state));
     } else if (decoded_instruction == VERYSIMPLE_VM_HALT) {
         state->is_running = 0;

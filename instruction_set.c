@@ -13,4 +13,6 @@ const int VERYSIMPLE_VM_BRT = 9;
 const int VERYSIMPLE_VM_BRF = 10;
 const int VERYSIMPLE_VM_CALL = 11;
 const int VERYSIMPLE_VM_RET = 12;
-const int VERYSIMPLE_VM_PRINT = 13;
+const int VERYSIMPLE_VM_LOAD = 13;
+const int VERYSIMPLE_VM_STORE = 14;
+const int VERYSIMPLE_VM_PRINT = 15;

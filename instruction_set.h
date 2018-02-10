@@ -16,5 +16,7 @@ extern const int VERYSIMPLE_VM_BRT;
 extern const int VERYSIMPLE_VM_BRF;
 extern const int VERYSIMPLE_VM_CALL;
 extern const int VERYSIMPLE_VM_RET;
+extern const int VERYSIMPLE_VM_LOAD;
+extern const int VERYSIMPLE_VM_STORE;
 extern const int VERYSIMPLE_VM_PRINT;
 #endif //VERYSIMPLE_VM_INSTRUCTION_SET_H

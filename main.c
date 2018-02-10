@@ -3,16 +3,26 @@
 #include "instruction_set.h"
 
 int main(int argc, char *argv[]) {
-    int branching[] = {
-            VERYSIMPLE_VM_ICONST, 10,
-            VERYSIMPLE_VM_ICONST, 20,
+    int factorial[] = {
+            VERYSIMPLE_VM_LOAD, -3,
+            VERYSIMPLE_VM_ICONST, 2,
             VERYSIMPLE_VM_LT,
-            VERYSIMPLE_VM_BRT, 8,
-            VERYSIMPLE_VM_HALT,
-            VERYSIMPLE_VM_ICONST, 30,
+            VERYSIMPLE_VM_BRF, 10,
+            VERYSIMPLE_VM_ICONST, 1,
+            VERYSIMPLE_VM_RET,
+            VERYSIMPLE_VM_LOAD, -3,
+            VERYSIMPLE_VM_LOAD, -3,
+            VERYSIMPLE_VM_ICONST, 1,
+            VERYSIMPLE_VM_ISUB,
+            VERYSIMPLE_VM_CALL, 0, 1,
+            VERYSIMPLE_VM_IMUL,
+            VERYSIMPLE_VM_RET,
+            VERYSIMPLE_VM_ICONST, 5,
+            VERYSIMPLE_VM_CALL, 0, 1,
+            VERYSIMPLE_VM_PRINT,
             VERYSIMPLE_VM_HALT
     };
-    int size = sizeof(branching) / sizeof(branching[0]);
-    run(branching, size, 0);
+    int size = sizeof(factorial) / sizeof(factorial[0]);
+    run(factorial, size, 22);
     return 0;
 }
