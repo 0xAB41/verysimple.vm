@@ -21,18 +21,41 @@ static void print_stack(struct vm *state) {
     log_debug("\n");
 }
 
+/**
+ * Pops a value from stack top
+ * @param state
+ * @return
+ */
 static int pop(struct vm *state) {
     return state->stack[state->stack_pointer--];
 }
 
+/**
+ * Pushes given value on top of stack
+ * @param state
+ * @param value
+ * @return
+ */
 static int push(struct vm *state, int value) {
     return (state->stack[++state->stack_pointer] = value) == value;
 }
 
+/**
+ * Returns value at top of the stock with out 'pop'ing it
+ * @param state
+ * @return
+ */
 static int peek(struct vm *state) {
     return state->stack[state->stack_pointer];
 }
 
+/**
+ * Saves current state and performs a function call
+ * - Save program_counter, frame_pointer, stack_pointer to stack
+ * - Save number of arguments function needs on stack
+ * - set program_counter to function jump location
+ * @param state
+ */
 static void save_state_and_jump_to_fn(struct vm *state) {
     int location = state->instructions[state->program_counter++];
     int nargs = state->instructions[state->program_counter++];
@@ -44,6 +67,13 @@ static void save_state_and_jump_to_fn(struct vm *state) {
     state->program_counter = location;
 }
 
+/**
+ * Unwinds stack from function return.
+ * - Saves the function return value,
+ * - restores program_counter, frame_pointer, stack_pointer to saved values
+ * - Puts the function return value at top of the stack
+ * @param state
+ */
 static void return_from_fn_and_unwind_stack(struct vm *state) {
     int function_return = pop(state);
     state->stack_pointer = state->frame_pointer;
@@ -55,6 +85,13 @@ static void return_from_fn_and_unwind_stack(struct vm *state) {
     log_debug("ret\n");
 }
 
+/**
+ * Pop's two values from stack, applies 'op' on those and then
+ * pushes the result on to stack
+ * @param state
+ * @param op
+ * @param debug_str
+ */
 static void perform_binary_op(struct vm *state, int (*op)(int, int), char *debug_str) {
     int a = pop(state);
     int b = pop(state);
@@ -62,6 +99,12 @@ static void perform_binary_op(struct vm *state, int (*op)(int, int), char *debug
     push(state, op(a, b));
 }
 
+/**
+ * sets program_counter to jump location if fn(stack.pop()) returns true
+ * @param state
+ * @param fn
+ * @param debug_str
+ */
 static void branch_on_condition(struct vm *state, int (*fn)(int), char *debug_str) {
     int location = state->instructions[state->program_counter++];
     int flag = pop(state);
@@ -71,6 +114,11 @@ static void branch_on_condition(struct vm *state, int (*fn)(int), char *debug_st
     }
 }
 
+/**
+ * Reads the offset specified at program_counter and loads the constant
+ * at location frame_pointer+offset on to stack
+ * @param state
+ */
 static void load_const_rel_to_frame(struct vm *state) {
     int offset = state->instructions[state->program_counter++];
     int val = state->stack[state->frame_pointer + offset];
@@ -78,20 +126,43 @@ static void load_const_rel_to_frame(struct vm *state) {
     log_debug("load %d = %d\n", offset, val);
 }
 
+/**
+ * Loads the constant at program_counter on to stack
+ * @param state
+ */
 static void load_const(struct vm *state) {
     int val = state->instructions[state->program_counter++];
     push(state, val);
     log_debug("iconst %d\n", val);
 }
 
+/**
+ * Fetches the instruction to be executed and points
+ * program_counter at next instruction to be executed
+ * @param state
+ * @return
+ */
 static int fetch(struct vm *state) {
     return state->instructions[state->program_counter++];
 }
 
+/**
+ * Decodes the given instruction. NoOp since each instructions and data
+ * are a word each
+ * @param instruction
+ * @return
+ */
 static int decode(int instruction) {
     return instruction;
 }
 
+/**
+ * Executes the given decoded instruction.
+ * Returns 1 if execution is successful, 0 otherwise
+ * @param state
+ * @param decoded_instruction
+ * @return 1 or 0
+ */
 static int execute(struct vm *state, int decoded_instruction) {
     int ret_val = 1;
     print_stack(state);
@@ -150,6 +221,14 @@ static int execute(struct vm *state, int decoded_instruction) {
     return ret_val;
 }
 
+/**
+ * Performs fetch->decode->execute cycle for given set of instructions
+ * as long as the execution is successful and no halt is encountered
+ * @param instructions
+ * @param instructions_size
+ * @param entry_point
+ * @param stack_size
+ */
 void run(int *instructions, int instructions_size, int entry_point, int stack_size) {
     int *stack = (int *) malloc(stack_size * sizeof(int));
     if (stack == NULL) {
