@@ -150,8 +150,8 @@ static int execute(struct vm *state, int decoded_instruction) {
     return ret_val;
 }
 
-void run(int *instructions, int instructions_size, int entry_point) {
-    int *stack = (int *) malloc(100 * sizeof(int));
+void run(int *instructions, int instructions_size, int entry_point, int stack_size) {
+    int *stack = (int *) malloc(stack_size * sizeof(int));
     if (stack == NULL) {
         log_error("Could not allocate memory for stack\n");
         exit(1);

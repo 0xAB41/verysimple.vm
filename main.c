@@ -26,7 +26,7 @@ void run_factorial(int n) {
             VERYSIMPLE_VM_HALT
     };
     int size = sizeof(factorial) / sizeof(factorial[0]);
-    run(factorial, size, size - 7);
+    run(factorial, size, size - 7, 100);
 }
 
 void run_fibonacci(int n) {
@@ -63,7 +63,7 @@ void run_fibonacci(int n) {
             VERYSIMPLE_VM_HALT
     };
     int size = sizeof(fibonacci) / sizeof(fibonacci[0]);
-    run(fibonacci, size, size-7);
+    run(fibonacci, size, size-7, 100);
 }
 
 int main(int argc, char *argv[]) {
