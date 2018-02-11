@@ -108,17 +108,17 @@ static int execute(struct vm *state, int decoded_instruction) {
         case VERYSIMPLE_VM_IMUL:
             perform_binary_op(state, &imul, "imul");
             break;
-        case VERYSIMPLE_VM_LT:
-            perform_binary_op(state, &ilt, "lt");
+        case VERYSIMPLE_VM_ILT:
+            perform_binary_op(state, &ilt, "ilt");
             break;
-        case VERYSIMPLE_VM_GT:
-            perform_binary_op(state, &igt, "gt");
+        case VERYSIMPLE_VM_IGT:
+            perform_binary_op(state, &igt, "igt");
             break;
-        case VERYSIMPLE_VM_EQ:
-            perform_binary_op(state, &ieq, "eq");
+        case VERYSIMPLE_VM_IEQ:
+            perform_binary_op(state, &ieq, "ieq");
             break;
-        case VERYSIMPLE_VM_NEQ:
-            perform_binary_op(state, &ineq, "neq");
+        case VERYSIMPLE_VM_INEQ:
+            perform_binary_op(state, &ineq, "igneq");
             break;
         case VERYSIMPLE_VM_BRT:
             branch_on_condition(state, &identity, "brt");

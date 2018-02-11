@@ -7,7 +7,7 @@ void run_factorial(int n) {
             //if n < 2 return 1
             VERYSIMPLE_VM_LOAD, -3,
             VERYSIMPLE_VM_ICONST, 2,
-            VERYSIMPLE_VM_LT,
+            VERYSIMPLE_VM_ILT,
             VERYSIMPLE_VM_BRF, 10,
             VERYSIMPLE_VM_ICONST, 1,
             VERYSIMPLE_VM_RET,
@@ -34,14 +34,14 @@ void run_fibonacci(int n) {
             //if n == 0 return 0
             VERYSIMPLE_VM_LOAD, -3,
             VERYSIMPLE_VM_ICONST, 0,
-            VERYSIMPLE_VM_EQ,
+            VERYSIMPLE_VM_IEQ,
             VERYSIMPLE_VM_BRF, 10,
             VERYSIMPLE_VM_ICONST, 0,
             VERYSIMPLE_VM_RET,
             //if n < 3 return 1
             VERYSIMPLE_VM_LOAD, -3,
             VERYSIMPLE_VM_ICONST, 3,
-            VERYSIMPLE_VM_LT,
+            VERYSIMPLE_VM_ILT,
             VERYSIMPLE_VM_BRF, 20,
             VERYSIMPLE_VM_ICONST, 1,
             VERYSIMPLE_VM_RET,
